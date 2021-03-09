@@ -159,20 +159,22 @@ int delete_at(struct list_node **head, int index){
 int delete(struct list_node **head, int data) {
     struct list_node *current = *head;
     
-    // add case for null head    
+    if (current == NULL) {
+        return -1;
+    }   
 
-    if (current->data) {
+    if (current->data == data) {
         *head = current->next;
         return 0;
     }
 
-    struct list_node *previous = NULL;
     while (current != NULL && current->next != NULL) {
-          current->next = current->next->next;
-          return 0;
-       }
-       current = current->next;
-    
+        if (current->next->data == data) {
+            current->next = current->next->next;
+            return 0;
+        }
+        current = current->next;
+    }
     return -1;
 }
 
@@ -199,7 +201,13 @@ int main(int argc, char *argv[])
     delete_at(&head, 999999);
     delete_at(&head, 4);
 
+    print(head);
     delete(&head, 24);
+
+    print(head);
+    delete(&head, 9);
+    print(head);
+    delete(&head, 568);
     delete(&head, 99999999);
 
     print(head);
