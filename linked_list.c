@@ -27,7 +27,10 @@ int insert(struct list_node **head, int data)
 {
     struct list_node *new_node = malloc(sizeof(struct list_node));
     //struct list_node *new_node = NULL;
-
+	if (new_node == NULL) {
+        free(new_node);
+        return -1;
+    }
     new_node->data = data;
     new_node->next = *head;
     *head = new_node;
