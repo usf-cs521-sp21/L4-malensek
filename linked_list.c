@@ -164,17 +164,21 @@ int delete(struct list_node **head, int data) {
     }   
 
     if (current->data == data) {
-        *head = current->next;
+        *head = current->next; 
+    	free(current);
         return 0;
     }
 
     while (current != NULL && current->next != NULL) {
         if (current->next->data == data) {
+			struct list_node *temp = current->next;
             current->next = current->next->next;
+    		free(temp);
             return 0;
         }
         current = current->next;
     }
+
     return -1;
 }
 
