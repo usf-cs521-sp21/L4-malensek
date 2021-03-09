@@ -178,6 +178,19 @@ int delete(struct list_node **head, int data) {
     return -1;
 }
 
+/**
+ * Free the linked list.  
+ */
+void free_list(struct list_node *head)
+{
+    struct list_node *current;
+    while (head != NULL) {
+        current = head;
+        head = head->next;
+        free(current);
+    }
+}
+
 int main(int argc, char *argv[])
 {
     /* start with empty list */
@@ -211,6 +224,8 @@ int main(int argc, char *argv[])
     delete(&head, 99999999);
 
     print(head);
+
+	free_list(head);
 
     return 0;
 }
