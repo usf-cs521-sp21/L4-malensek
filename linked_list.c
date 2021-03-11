@@ -27,7 +27,10 @@ int insert(struct list_node **head, int data)
 {
     struct list_node *new_node = malloc(sizeof(struct list_node));
     //struct list_node *new_node = NULL;
-
+	if (new_node == NULL) {
+        free(new_node);
+        return -1;
+    }
     new_node->data = data;
     new_node->next = *head;
     *head = new_node;
@@ -48,13 +51,19 @@ int insert_at(struct list_node **head, int index, int data)
 {
 	struct list_node *new_node = malloc(sizeof(struct list_node));
 	if(new_node == NULL){
+		free(new_node);
 		return -1;
 	}
 	new_node->data = data;
 
-	if(head == NULL){
+	if((head == NULL || *head == NULL) && index == 0){
 		*head = new_node;
 		return 0;
+	}
+
+	if ((head == NULL || *head == NULL) && index !=0) {
+		free(new_node);
+		return -1;
 	}
 	int counter = 0;
 	struct list_node *temp = *head;
@@ -76,6 +85,7 @@ int insert_at(struct list_node **head, int index, int data)
 	} 
 	else {
 		printf("Index larger than length of list\n");
+		free(new_node);
 		return -1;
 	}
 	
@@ -164,25 +174,44 @@ int delete(struct list_node **head, int data) {
     }   
 
     if (current->data == data) {
-        *head = current->next;
+        *head = current->next; 
+    	free(current);
         return 0;
     }
 
     while (current != NULL && current->next != NULL) {
         if (current->next->data == data) {
+			struct list_node *temp = current->next;
             current->next = current->next->next;
+    		free(temp);
             return 0;
         }
         current = current->next;
     }
+
     return -1;
+}
+
+/**
+ * Free the linked list.  
+ */
+void free_list(struct list_node *head)
+{
+    struct list_node *current;
+    while (head != NULL) {
+        current = head;
+        head = head->next;
+        free(current);
+    }
 }
 
 int main(int argc, char *argv[])
 {
     /* start with empty list */
     struct list_node* head = NULL;
-
+	insert_at(&head, 1, 20000);
+	insert_at(&head, 0, 10000);
+	
     append(&head, 1);
     append(&head, 2);
     append(&head, 568);
@@ -191,6 +220,7 @@ int main(int argc, char *argv[])
     insert(&head, 13);
     insert(&head, 9);
     insert(&head, 9);
+	insert_at(&head, 1000, 500);
 
     int i = search(head, 999999);
     printf("%d\n", i);
@@ -211,6 +241,8 @@ int main(int argc, char *argv[])
     delete(&head, 99999999);
 
     print(head);
+
+	free_list(head);
 
     return 0;
 }
