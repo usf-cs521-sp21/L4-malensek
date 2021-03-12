@@ -23,20 +23,6 @@ int insert(struct list_node **head, int data);
 /** Prints the list contents */
 void print(struct list_node *head);
 
-int insert(struct list_node **head, int data)
-{
-    struct list_node *new_node = malloc(sizeof(struct list_node));
-    //struct list_node *new_node = NULL;
-	if (new_node == NULL) {
-        free(new_node);
-        return -1;
-    }
-    new_node->data = data;
-    new_node->next = *head;
-    *head = new_node;
-    return 0;
-}
-
 void print(struct list_node *head)
 {
     struct list_node *current = head;
@@ -89,6 +75,11 @@ int insert_at(struct list_node **head, int index, int data)
 		return -1;
 	}
 	
+}
+
+int insert(struct list_node **head, int data)
+{
+    return insert_at(head, 0, data);
 }
 
 int append(struct list_node **head, int data){
