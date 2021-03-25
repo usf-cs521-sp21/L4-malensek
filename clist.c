@@ -21,11 +21,13 @@ struct clist *clist_create(size_t capacity, size_t item_sz)
 {
     struct clist *list =  malloc(sizeof(struct clist));
     if (list == NULL) {
-       perror("Could not malloc");
-      return  NULL;
+        free(list);
+        perror("Could not malloc");
+        return  NULL;
     }
 
     if (capacity == 0) {
+        free(list);
         return NULL;
     }
 
@@ -45,8 +47,10 @@ struct clist *clist_create(size_t capacity, size_t item_sz)
 
 void clist_destroy(struct clist *list)
 {
-    free(list->element_storage);
-    free(list);
+    if (list != NULL) {
+        free(list->element_storage);
+        free(list);
+    }
 }
 
 struct clist_iterator clist_create_iter(void)
@@ -56,6 +60,9 @@ struct clist_iterator clist_create_iter(void)
 }
 
 ssize_t clist_add(struct clist *list, void *item) {
+    if (list == NULL) {
+        return -1;
+    }
     size_t idx = list->insertions % list->capacity;
     void *ptr = list->element_storage + idx * list->item_sz;
     memcpy(ptr, item, list->item_sz);
@@ -64,6 +71,9 @@ ssize_t clist_add(struct clist *list, void *item) {
 
 void *clist_add_new(struct clist *list)
 {
+    if (list == NULL) {
+        return NULL;
+    }
     list->insertions++;
     int idx = list->insertions % list->capacity;
     void *ptr = list->element_storage + idx * list->item_sz;
