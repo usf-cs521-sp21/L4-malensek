@@ -71,7 +71,7 @@ void *clist_add_new(struct clist *list)
 }
 
 void *clist_get(struct clist *list, size_t idx) {
-    if (list == NULL || idx >= list->insertions || (list->insertions < list->capacity) && (idx < list->insertions - list->capacity))
+    if (list == NULL || idx >= list->insertions || ((list->insertions > list->capacity) && (idx < list->insertions - list->capacity)))
     {
         return NULL;
     } 
