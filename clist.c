@@ -115,6 +115,10 @@ int main(void)
     x = 6; clist_add(list, &x);
 
     int *y = clist_get(list, 2);
+    if (y == NULL) {
+        clist_destroy(list);
+        return 1;
+    }
     printf("y = %d\n\n", *y);
 
     void *elem;
