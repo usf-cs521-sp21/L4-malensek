@@ -74,9 +74,9 @@ void *clist_add_new(struct clist *list)
     if (list == NULL) {
         return NULL;
     }
-    list->insertions++;
     int idx = list->insertions % list->capacity;
     void *ptr = list->element_storage + idx * list->item_sz;
+    list->insertions++;
     return ptr;
 }
 
