@@ -4,7 +4,10 @@
 #include <sys/types.h>
 
 struct clist;
-struct clist_iterator;
+struct clist_iterator {
+    unsigned int initialized : 1;
+    size_t idx;
+};
 
 /**
  * Creates a new circular list with the given capacity and item size.
@@ -40,6 +43,9 @@ void *clist_add_new(struct clist *list);
  * might retrieve index 682 from a circular list that only stores 5 elements).
  */
 void *clist_get(struct clist *list, size_t idx);
+
+void *clist_next(struct clist *list, struct clist_iterator *iter);
+void *clist_prev(struct clist *list, struct clist_iterator *iter);
 
 /**
  * Iterates through the provided list, starting with the most recent insertion

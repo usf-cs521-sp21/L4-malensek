@@ -158,7 +158,7 @@ int delete_at(struct list_node **head, int index){
 	return 0;
 }
 
-int delete(struct list_node **head, int data) {
+int delete_data(struct list_node **head, int data) {
     struct list_node *current = *head;
     
     if (current == NULL) {
@@ -196,47 +196,4 @@ void free_list(struct list_node *head)
         free(current);
     }
 }
-
-int main(int argc, char *argv[])
-{
-    /* start with empty list */
-    struct list_node* head = NULL;
-	insert_at(&head, 1, 20000);
-	insert_at(&head, 0, 10000);
-	
-    append(&head, 1);
-    append(&head, 2);
-    append(&head, 568);
-    insert(&head, 3);
-    insert(&head, 24);
-    insert(&head, 13);
-    insert(&head, 9);
-    insert(&head, 9);
-	insert_at(&head, 1000, 500);
-
-    int i = search(head, 999999);
-    printf("%d\n", i);
-
-    print(head);
-
-    delete_at(&head, 0);
-    delete_at(&head, 999999);
-    delete_at(&head, 4);
-
-    print(head);
-    delete(&head, 24);
-
-    print(head);
-    delete(&head, 9);
-    print(head);
-    delete(&head, 568);
-    delete(&head, 99999999);
-
-    print(head);
-
-	free_list(head);
-
-    return 0;
-}
-
 

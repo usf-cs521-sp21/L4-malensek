@@ -1,1 +1,6 @@
 /linked_list
+*.o
+*.so
+ds
+libds.so
+tests/outputs/*
