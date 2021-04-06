@@ -85,6 +85,10 @@ subtest("Test for segfault for clist_iterate and clist_iterate_rev",
 
     struct clist_iterator iter1 = clist_create_iter();
     void *elem;
+    
+    elem = clist_prev(test_list, &iter1);
+    test_assert(elem == NULL);
+
     int current;
     for (int i = 14; i >= 10; i--) {
         elem = clist_next(test_list, &iter1);
