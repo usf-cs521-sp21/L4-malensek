@@ -4,7 +4,10 @@
 #include <sys/types.h>
 
 struct clist;
-struct clist_iterator;
+struct clist_iterator {
+    unsigned int initialized : 1;
+    size_t idx;
+};
 
 /**
  * Creates a new circular list with the given capacity and item size.
@@ -40,6 +43,27 @@ void *clist_add_new(struct clist *list);
  * might retrieve index 682 from a circular list that only stores 5 elements).
  */
 void *clist_get(struct clist *list, size_t idx);
+
+/**
+ * Starts with the most recently added value to the list and gets the next value.
+ * cliet_next and clist_prev are meant to work together. 
+ * If clist_next is called and then clist_prev is called the next 
+ * and previous values will always be returned. They can be called back and forth indefinitely.
+ *
+ * clist_next will return NULL once it gets to the last value inserted is reached.
+ * The iterator will not be modified at that point 
+ * which allows clist_prev to be called to get the prvious element. 
+ * clist_prev can be then called get values in the the other direction.
+ */ 
+void *clist_next(struct clist *list, struct clist_iterator *iter);
+
+/**
+ * Gets the previous value from the list working from the first added value to the most recent.
+ * cliet_next and clist_prev are meant to work together. 
+ * If clist_prev is called imediatly after elements are added to the list
+ * clist_prev will return NULL.
+ */ 
+void *clist_prev(struct clist *list, struct clist_iterator *iter);
 
 /**
  * Iterates through the provided list, starting with the most recent insertion

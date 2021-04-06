@@ -12,11 +12,6 @@ struct clist {
     void *element_storage;
 };
 
-struct clist_iterator {
-    unsigned int initialized : 1;
-    size_t idx;
-};
-
 struct clist *clist_create(size_t capacity, size_t item_sz)
 {
     struct clist *list =  malloc(sizeof(struct clist));
@@ -64,7 +59,7 @@ ssize_t clist_add(struct clist *list, void *item) {
         return -1;
     }
     size_t idx = list->insertions % list->capacity;
-    void *ptr = list->element_storage + idx * list->item_sz;
+    void *ptr = (char *) list->element_storage + idx * list->item_sz;
     memcpy(ptr, item, list->item_sz);
     return list->insertions++;
 }
@@ -75,13 +70,14 @@ void *clist_add_new(struct clist *list)
         return NULL;
     }
     int idx = list->insertions % list->capacity;
-    void *ptr = list->element_storage + idx * list->item_sz;
+    void *ptr = (char *) list->element_storage + idx * list->item_sz;
     list->insertions++;
     return ptr;
 }
 
 void *clist_get(struct clist *list, size_t idx) {
-    if (list == NULL || idx >= list->insertions || ((list->insertions > list->capacity) && (idx < list->insertions - list->capacity)))
+    if (list == NULL || idx >= list->insertions || 
+            ((list->insertions > list->capacity) && (idx < list->insertions - list->capacity)))
     {
         return NULL;
     } 
@@ -90,7 +86,32 @@ void *clist_get(struct clist *list, size_t idx) {
 
     // first we goes from element storage
     // increment on element storage
-    return list->element_storage + real_idx * list->item_sz;
+    return (char *) list->element_storage + real_idx * list->item_sz;
+}
+
+void *clist_next(struct clist *list, struct clist_iterator *iter) { 
+    if (iter->idx >= list->capacity) {
+        return NULL;
+    } else {
+        void *result = clist_get(list, (list->insertions - iter->idx - 1));
+        if (result != NULL && iter->idx + 1 != list->insertions) {
+            iter->idx++;
+        }
+        return result;
+    }
+}
+
+void *clist_prev(struct clist *list, struct clist_iterator *iter) {
+    iter->idx--;
+    iter->idx--;
+
+    if (iter->idx > list->capacity) {
+        iter->idx = 0;
+        return NULL;
+    } else {
+       void *result = clist_get(list, (list->insertions - iter->idx++ - 1));
+       return result;
+    }
 }
 
 void *clist_iterate(struct clist *list, struct clist_iterator *iter) {
@@ -109,44 +130,3 @@ void *clist_iterate_rev(struct clist *list, struct clist_iterator *iter) {
     }
 }
 
-int main(void)
-{
-    struct clist *list = clist_create(5, sizeof(int));
-
-    int x;
-    x = 0;
-    clist_add(list, &x);
-
-    x = 1; clist_add(list, &x);
-    x = 2; clist_add(list, &x);
-    x = 3; clist_add(list, &x);
-    x = 4; clist_add(list, &x);
-    x = 5; clist_add(list, &x);
-    x = 6; clist_add(list, &x);
-
-    int *y = clist_get(list, 2);
-    if (y == NULL) {
-        clist_destroy(list);
-        return 1;
-    }
-    printf("y = %d\n\n", *y);
-
-    void *elem;
-    struct clist_iterator iter = clist_create_iter();
-    while ((elem = clist_iterate(list, &iter)) != NULL) {
-        int ie = *((int *) elem);
-        printf("-> %d\n", ie);
-    }
-
-    puts("\n\n");
-
-    struct clist_iterator iter2 = clist_create_iter();
-    while ((elem = clist_iterate_rev(list, &iter2)) != NULL) {
-        int ie = *((int *) elem);
-        printf("-> %d\n", ie);
-    }
-
-    clist_destroy(list);
-
-    return 0;
-}
