@@ -16,6 +16,7 @@ struct clist {
 struct clist_iterator {
     unsigned int initialized : 1;
     size_t idx;
+    int start;
 };
 
 struct clist *clist_create(size_t capacity, size_t item_sz)
@@ -101,13 +102,25 @@ void *clist_iterate(struct clist *list, struct clist_iterator *iter) {
 }
 
 void *clist_iterate_rev(struct clist *list, struct clist_iterator *iter) {
-    if (list->insertions < list->capacity) {
-        return clist_get(list, iter->idx++);
-    } else {
-        void *ptr = clist_get(list, iter->idx + list->insertions - list->capacity);
-        iter->idx++;
-        return ptr;
+
+    void *ptr;
+    bool flag = false;
+
+    if (iter->idx == 0 && flag != true) {
+        iter->idx = (list->insertions % list->capacity) ;
+        iter->initialized = 1;
+        flag = true;
+        iter->start = (list->insertions % list->capacity);
+
+    } else if (iter->idx == list->capacity) {
+        iter->idx = 0;
+
+    } else if (iter->start == iter->idx) {
+        return NULL;
     }
+    ptr = clist_get(list, iter->idx );
+    iter->idx++;
+    return ptr;
 }
 
 int main(void)
