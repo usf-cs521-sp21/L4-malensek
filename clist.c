@@ -112,6 +112,10 @@ void *clist_iterate_rev(struct clist *list, struct clist_iterator *iter) {
 int main(void)
 {
     struct clist *list = clist_create(5, sizeof(int));
+    if (list == NULL) {
+        clist_destroy(list);
+        return 1;
+    }
 
     int x;
     x = 0;
